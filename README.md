@@ -1,11 +1,27 @@
+<p align="center">
+    <a href="https://evomark.co.uk" target="_blank" alt="Link to evoMark's website">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="https://evomark.co.uk/wp-content/uploads/static/evomark-logo--dark.svg">
+          <source media="(prefers-color-scheme: light)" srcset="https://evomark.co.uk/wp-content/uploads/static/evomark-logo--light.svg">
+          <img alt="evoMark company logo" src="https://evomark.co.uk/wp-content/uploads/static/evomark-logo--light.svg" width="500">
+        </picture>
+    </a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/npm/dm/@evomark/vue-forward-slots.svg" alt="Downloads"></a>
+  <a href="https://www.npmjs.com/package/@evomark/vue-forward-slots"><img src="https://img.shields.io/npm/v/@evomark/vue-forward-slots.svg" alt="Version"></a>
+  <a href="https://github.com/evo-mark/vue-forward-slots/blob/main/LICENCE"><img src="https://img.shields.io/github/license/evo-mark/vue-forward-slots?style=flat" alt="Licence"></a>
+</p>
+
 # Vue Forward Slots
 
 Effortlessly forward slots to child components in Vue 3 applications.
 
 ## Features
 
-- Easily forward all slots or specific slots to child components
-- Simple and declarative syntax
+-   Easily forward all slots or specific slots to child components
+-   Simple and declarative syntax
 
 ## Why Vue Forward Slots?
 
@@ -16,16 +32,16 @@ default way of doing this can be verbose and repetitive. Consider the following 
 
 ```vue
 <template>
-    <ChildComponent>
-        <template v-for="(index, name) in $slots" v-slot:[name]="data">
-            <slot :name="name" v-bind="data"/>
-        </template>
-    </ChildComponent>
-    <AnotherChildComponent>
-        <template v-for="(index, name) in $slots" v-slot:[name]="data">
-            <slot :name="name" v-bind="data"/>
-        </template>
-    </AnotherChildComponent>
+	<ChildComponent>
+		<template v-for="(index, name) in $slots" v-slot:[name]="data">
+			<slot :name="name" v-bind="data" />
+		</template>
+	</ChildComponent>
+	<AnotherChildComponent>
+		<template v-for="(index, name) in $slots" v-slot:[name]="data">
+			<slot :name="name" v-bind="data" />
+		</template>
+	</AnotherChildComponent>
 </template>
 ```
 
@@ -35,10 +51,10 @@ Verbose and hard to read!
 
 ```vue
 <template>
-    <ForwardSlots :slots="$slots">
-        <ChildComponent/>
-        <AnotherChildComponent/>
-    </ForwardSlots>
+	<ForwardSlots :slots="$slots">
+		<ChildComponent />
+		<AnotherChildComponent />
+	</ForwardSlots>
 </template>
 ```
 
@@ -56,9 +72,9 @@ You can import it in the component where you want to use it.
 
 ```vue
 <script>
-    import {ForwardSlots} from "vue-forward-slots";
+import {ForwardSlots} from "vue-forward-slots";
 
-    ...
+...
 </script>
 ```
 
@@ -75,18 +91,16 @@ We define the slots in the root component.
 
 ```vue
 <template>
-    <TableComponent>
-        <template #name-header>
-            <p class="font-bold">
-                Name
-            </p>
-        </template>
+	<TableComponent>
+		<template #name-header>
+			<p class="font-bold">Name</p>
+		</template>
 
-        // We still have access to the slot data like we would normally
-        <template #status-cell="{ user }">
-            <StatusBadge :status="user.status"/>
-        </template>
-    </TableComponent>
+		// We still have access to the slot data like we would normally
+		<template #status-cell="{ user }">
+			<StatusBadge :status="user.status" />
+		</template>
+	</TableComponent>
 </template>
 ```
 
@@ -96,13 +110,13 @@ We forward the slots to the child components.
 
 ```vue
 <template>
-    <table>
-        // Notice that we can wrap multiple components in the ForwardSlots component
-        <ForwardSlots :slots="$slots">
-            <TableHeadComponent/>
-            <TableBodyComponent/>
-        </ForwardSlots>
-    </table>
+	<table>
+		// Notice that we can wrap multiple components in the ForwardSlots component
+		<ForwardSlots :slots="$slots">
+			<TableHeadComponent />
+			<TableBodyComponent />
+		</ForwardSlots>
+	</table>
 </template>
 ```
 
@@ -113,20 +127,16 @@ default to the text in the slot.
 
 ```vue
 <template>
-    <thead>
-    <tr>
-        <th>
-            <slot name="name-header">
-                Some default text
-            </slot>
-        </th>
-        <th>
-            <slot name="status-header">
-                Some default text
-            </slot>
-        </th>
-    </tr>
-    </thead>
+	<thead>
+		<tr>
+			<th>
+				<slot name="name-header"> Some default text </slot>
+			</th>
+			<th>
+				<slot name="status-header"> Some default text </slot>
+			</th>
+		</tr>
+	</thead>
 </template>
 ```
 
@@ -136,20 +146,20 @@ The TableBodyComponent also has access to the slots defined in the root componen
 
 ```vue
 <template>
-    <tbody>
-    <tr v-for="user in users">
-        <td>
-            <slot name="name-cell" :user="user">
-                {{ user.name }}
-            </slot>
-        </td>
-        <td>
-            <slot name="status-cell" :user="user">
-                {{ user.status }}
-            </slot>
-        </td>
-    </tr>
-    </tbody>
+	<tbody>
+		<tr v-for="user in users">
+			<td>
+				<slot name="name-cell" :user="user">
+					{{ user.name }}
+				</slot>
+			</td>
+			<td>
+				<slot name="status-cell" :user="user">
+					{{ user.status }}
+				</slot>
+			</td>
+		</tr>
+	</tbody>
 </template>
 ```
 
@@ -157,15 +167,15 @@ We could even go a step further and forward the slots to the next level of child
 
 ```vue
 <template>
-    <thead>
-    <tr>
-        <th v-for="header in headers">
-            <ForwardSlots :slots="$slots">
-                <TableHeaderCell :header="header"/>
-            </ForwardSlots>
-        </th>
-    </tr>
-    </thead>
+	<thead>
+		<tr>
+			<th v-for="header in headers">
+				<ForwardSlots :slots="$slots">
+					<TableHeaderCell :header="header" />
+				</ForwardSlots>
+			</th>
+		</tr>
+	</thead>
 </template>
 ```
 
@@ -175,15 +185,15 @@ In theory, we could keep forwarding slots to as many levels of child components 
 
 ```vue
 <template>
-    // For a single slot
-    <ForwardSlots :slots="$slots" only="header">
-        <MyComponent/>
-    </ForwardSlots>
+	// For a single slot
+	<ForwardSlots :slots="$slots" only="header">
+		<MyComponent />
+	</ForwardSlots>
 
-    // For multiple slots
-    <ForwardSlots :slots="$slots" :only="['header', 'footer']">
-        <MyComponent/>
-    </ForwardSlots>
+	// For multiple slots
+	<ForwardSlots :slots="$slots" :only="['header', 'footer']">
+		<MyComponent />
+	</ForwardSlots>
 </template>
 ```
 
@@ -191,15 +201,14 @@ In theory, we could keep forwarding slots to as many levels of child components 
 
 ```vue
 <template>
-    // For a single slot
-    <ForwardSlots :slots="$slots" except="sidebar">
-        <MyComponent/>
-    </ForwardSlots>
+	// For a single slot
+	<ForwardSlots :slots="$slots" except="sidebar">
+		<MyComponent />
+	</ForwardSlots>
 
-    // For multiple slots
-    <ForwardSlots :slots="$slots" :except="['sidebar', 'footer']">
-        <MyComponent/>
-    </ForwardSlots>
+	// For multiple slots
+	<ForwardSlots :slots="$slots" :except="['sidebar', 'footer']">
+		<MyComponent />
+	</ForwardSlots>
 </template>
 ```
-

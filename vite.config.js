@@ -1,24 +1,15 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import commonjs from '@rollup/plugin-commonjs';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
-	plugins: [vue()],
-	build: {
-		lib: {
-			entry: 'src/index.ts',
-			name: 'ForwardSlots',
-			formats: ['es', 'cjs'],
-		},
-		rollupOptions: {
-			external: ['vue'],
-			output: {
-				globals: {
-					vue: 'Vue'
-				}
-			},
-			plugins: [nodeResolve(), commonjs()]
-		}
-	}
-})
+  plugins: [vue()],
+  build: {
+    lib: {
+      entry: "src/index.ts",
+      formats: ["es"],
+    },
+    rollupOptions: {
+      external: ["vue"],
+    },
+  },
+});

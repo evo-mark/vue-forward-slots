@@ -1,5 +1,1 @@
-import { ForwardSlots } from "./components/forward-slots";
-
-export {
-    ForwardSlots,
-}
+export { ForwardSlots } from "./components/forward-slots";
