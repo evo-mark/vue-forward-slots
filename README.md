@@ -63,7 +63,7 @@ Simple and clean!
 ## Installation
 
 ```bash
-npm install vue-forward-slots
+npm install @evomark/vue-forward-slots
 ```
 
 ### Importing
@@ -72,7 +72,7 @@ You can import it in the component where you want to use it.
 
 ```vue
 <script>
-import {ForwardSlots} from "vue-forward-slots";
+import {ForwardSlots} from "@evomark/vue-forward-slots";
 
 ...
 </script>
