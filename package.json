@@ -1,6 +1,10 @@
 {
     "name": "@evomark/vue-forward-slots",
     "version": "6.0.0",
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
     "description": "Forward slots and attributes to child components",
     "contributors": [
         "Jesse Gall",
@@ -12,7 +16,8 @@
     ],
     "scripts": {
         "build": "vite build",
-        "postbuild": "cp ./src/vue-forward-slots.d.ts ./dist/vue-forward-slots.d.ts"
+        "postbuild": "cp ./src/vue-forward-slots.d.ts ./dist/vue-forward-slots.d.ts",
+        "release": "npm run build && npm publish"
     },
     "type": "module",
     "main": "dist/vue-forward-slots.js",
@@ -46,7 +51,7 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/evo-mark/vue-forward-slots"
+        "url": "git+https://github.com/evo-mark/vue-forward-slots.git"
     },
     "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }

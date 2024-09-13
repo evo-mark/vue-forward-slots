@@ -1,6 +1,6 @@
 import { computed, defineComponent, h, PropType, Slot, VNode, VNodeProps } from "vue";
 
-type SlotOption = string | string[];
+type SlotOption = string | RegExp | (string | RegExp)[];
 
 type Slots = {
 	[name: string]: Slot | undefined;
@@ -14,7 +14,7 @@ interface ForwardSlotsProps {
 }
 
 function isValidSlotOption(value: any): value is SlotOption {
-	return typeof value === "string" || Array.isArray(value);
+	return typeof value === "string" || value instanceof RegExp || Array.isArray(value);
 }
 
 function wrap(input: any): string[] {
@@ -37,12 +37,31 @@ function createSlots(slots: Slots, options: ForwardSlotsProps) {
 		}, {} as Slots);
 }
 
-function shouldIncludeSlot(key: string, include: string[], exclude: string[]): boolean {
-	if (include.length && !include.includes(key)) {
-		return false;
+function resolveSlotInclusionExpression(expression: string | RegExp): string | RegExp {
+	if (expression instanceof RegExp) return expression;
+	else {
+		expression = expression
+			.replace(/[-\/\\^$+?.()|[\]{}]/g, "\\$&")
+			.replace(/^\*/, ".*")
+			.replace(/\*$/, ".*");
+		return expression.includes(".*") ? new RegExp(`^${expression}$`) : expression;
+	}
+}
+
+function shouldIncludeSlot(key: string, include: (string | RegExp)[], exclude: (string | RegExp)[]): boolean {
+	if (include.length) {
+		return include.some((item) => {
+			item = resolveSlotInclusionExpression(item);
+			if (item instanceof RegExp) return item.test(key);
+			else return item === key;
+		});
 	}
 
-	return !exclude.includes(key);
+	return exclude.every((item) => {
+		item = resolveSlotInclusionExpression(item);
+		if (item instanceof RegExp) return item.test(key) === false;
+		else return item !== key;
+	});
 }
 
 function createComponent(
@@ -63,12 +82,12 @@ export const ForwardSlots = defineComponent({
 			required: true,
 		},
 		only: {
-			type: [String, Array] as PropType<SlotOption>,
+			type: [String, RegExp, Array] as PropType<SlotOption>,
 			default: () => [] as SlotOption,
 			validator: isValidSlotOption,
 		},
 		except: {
-			type: [String, Array] as PropType<SlotOption>,
+			type: [String, RegExp, Array] as PropType<SlotOption>,
 			default: () => [] as SlotOption,
 			validator: isValidSlotOption,
 		},
