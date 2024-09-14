@@ -75,6 +75,7 @@ function createComponent(
 
 export const ForwardSlots = defineComponent({
 	name: "ForwardSlots",
+	inheritAttrs: false,
 	props: {
 		slots: {
 			type: Object as PropType<Slots>,
