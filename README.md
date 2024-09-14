@@ -26,6 +26,7 @@ Forked from https://github.com/jessegall/vue-forward-slots, this version offers 
 -   New `inherit-attrs` prop for the `ForwardSlots` component, default is **true**
 -   Support RegExp for `only` and `except` props or as array items for either
 -   Support wildcard matches at the start or end of items, e.g. `:only="['item*']"` or `:except="['*prepend']"`
+-   Extensive tests run against the library via Vitest and Vue Test Utils
 
 ## Features
 
