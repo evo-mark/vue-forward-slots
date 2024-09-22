@@ -10,10 +10,10 @@
     },
     "dependencies": {
         "@evomark/vue-forward-slots": "link:..",
-        "vue": "^3.4.37"
+        "vue": "^3.5.8"
     },
     "devDependencies": {
-        "@vitejs/plugin-vue": "^5.1.2",
-        "vite": "^5.4.1"
+        "@vitejs/plugin-vue": "^5.1.4",
+        "vite": "^5.4.7"
     }
 }
