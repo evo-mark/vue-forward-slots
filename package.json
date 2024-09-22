@@ -21,12 +21,19 @@
         "test": "vitest"
     },
     "type": "module",
-    "main": "dist/vue-forward-slots.js",
+    "main": "dist/vue-forward-slots.cjs",
     "module": "dist/vue-forward-slots.js",
     "types": "dist/vue-forward-slots.d.ts",
     "files": [
         "dist"
     ],
+    "exports": {
+        ".": {
+            "dev": "./src/index.ts",
+            "require": "./dist/vue-forward-slots.cjs",
+            "import": "./dist/vue-forward-slots.js"
+        }
+    },
     "peerDependencies": {
         "vue": "^3.0.0"
     },

@@ -5,7 +5,7 @@
 		</a>
 	</div>
 	<FirstLevel>
-		<template #default> Default </template>
+		Default
 		<template #one> One </template>
 		<template #item.test> Wildcard Test</template>
 	</FirstLevel>

@@ -1,8 +1,10 @@
 <template>
 	<div>
 		<p>First Level Reporting</p>
-		<ForwardSlots :slots="$slots" :except="[/^item.*/i]">
-			<SecondLevel />
+		<ForwardSlots :slots="$slots" :only="['item.test']">
+			<SecondLevel>
+				<div>Hello World</div>
+			</SecondLevel>
 		</ForwardSlots>
 	</div>
 </template>

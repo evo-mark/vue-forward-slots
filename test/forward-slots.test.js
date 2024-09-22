@@ -338,3 +338,56 @@ describe("when using the 'except' prop", () => {
 		expect(wrapper.html()).toContain("After the world");
 	});
 });
+
+describe("when combining both native and forwarded slots", () => {
+	const Inner = {
+		name: "Inner",
+		setup(props, { slots }) {
+			return () => [slots.default ? h("div", { id: "default-slot" }, slots.default()) : undefined];
+		},
+	};
+
+	test("native slot overrides a forwarded one", () => {
+		const wrapper = mount(ForwardSlots, {
+			props: {
+				slots: mockSlots,
+			},
+			slots: {
+				default: () =>
+					h(
+						Inner,
+						{},
+						{
+							default: () => h("span", "Native Slot"),
+						},
+					),
+			},
+		});
+
+		expect(wrapper.html()).toContain("Native Slot");
+		expect(wrapper.html()).not.toContain("Hello world");
+	});
+
+	test("native slot is filtered when enabled", () => {
+		const wrapper = mount(ForwardSlots, {
+			props: {
+				slots: mockSlots,
+				filterNative: true,
+				except: "default",
+			},
+			slots: {
+				default: () =>
+					h(
+						Inner,
+						{},
+						{
+							default: () => h("span", "Native Slot"),
+						},
+					),
+			},
+		});
+
+		expect(wrapper.html()).not.toContain("Native Slot");
+		expect(wrapper.html()).not.toContain("Hello world");
+	});
+});

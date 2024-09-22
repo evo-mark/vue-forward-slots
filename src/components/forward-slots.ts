@@ -10,7 +10,8 @@ interface ForwardSlotsProps {
 	slots: Slots;
 	only?: SlotOption;
 	except?: SlotOption;
-	inheritAttrs: Boolean;
+	inheritAttrs: boolean;
+	filterNative: boolean;
 }
 
 function isValidSlotOption(value: any): value is SlotOption {
@@ -25,12 +26,12 @@ function wrap(input: any): string[] {
 	return input.filter(Boolean);
 }
 
-function createSlots(slots: Slots, options: ForwardSlotsProps) {
+function createSlots(slots: Slots, options: ForwardSlotsProps, nativeSlots: string[]) {
 	const include = wrap(options.only);
 	const exclude = wrap(options.except);
 
 	return Object.entries(slots)
-		.filter(([slotName]) => shouldIncludeSlot(slotName, include, exclude))
+		.filter(([slotName]) => shouldIncludeSlot(slotName, include, exclude, nativeSlots, options.filterNative))
 		.reduce((result, [slotName, slotFunction]) => {
 			result[slotName] = (args: any) => slotFunction(args);
 			return result;
@@ -40,26 +41,34 @@ function createSlots(slots: Slots, options: ForwardSlotsProps) {
 function resolveSlotInclusionExpression(expression: string | RegExp): string | RegExp {
 	if (expression instanceof RegExp) return expression;
 	else {
-		expression = expression
+		const maybeRegex = expression
 			.replace(/[-\/\\^$+?.()|[\]{}]/g, "\\$&")
 			.replace(/^\*/, ".*")
 			.replace(/\*$/, ".*");
-		return expression.includes(".*") ? new RegExp(`^${expression}$`) : expression;
+		return maybeRegex.includes(".*") ? new RegExp(`^${maybeRegex}$`) : expression;
 	}
 }
 
-function shouldIncludeSlot(key: string, include: (string | RegExp)[], exclude: (string | RegExp)[]): boolean {
+function shouldIncludeSlot(
+	key: string,
+	include: (string | RegExp)[],
+	exclude: (string | RegExp)[],
+	nativeSlots: string[],
+	filterNative: boolean,
+): boolean {
 	if (include.length) {
 		return include.some((item) => {
 			item = resolveSlotInclusionExpression(item);
-			if (item instanceof RegExp) return item.test(key);
+			if (nativeSlots.includes(key) && filterNative !== true) return true;
+			else if (item instanceof RegExp) return item.test(key);
 			else return item === key;
 		});
 	}
 
 	return exclude.every((item) => {
 		item = resolveSlotInclusionExpression(item);
-		if (item instanceof RegExp) return item.test(key) === false;
+		if (nativeSlots.includes(key) && filterNative !== true) return true;
+		else if (item instanceof RegExp) return item.test(key) === false;
 		else return item !== key;
 	});
 }
@@ -69,8 +78,9 @@ function createComponent(
 	options: ForwardSlotsProps,
 	slots: Slots,
 	attrs: VNodeProps,
+	nativeSlots: string[],
 ): VNode {
-	return h(component, attrs, createSlots(slots, options));
+	return h(component, attrs, createSlots(slots, options, nativeSlots));
 }
 
 export const ForwardSlots = defineComponent({
@@ -96,15 +106,20 @@ export const ForwardSlots = defineComponent({
 			type: Boolean,
 			default: true,
 		},
+		filterNative: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	setup(props: ForwardSlotsProps, { slots, attrs }) {
 		const children = computed(() => slots.default?.() || []);
 
 		return () =>
 			children.value.map((node: VNode) => {
-				const slots = Object.assign({}, node.children, props.slots);
+				const nativeSlots = Object.keys(node.children ?? {});
+				const slots = Object.assign({}, props.slots, node.children);
 				const passthruAttrs = props.inheritAttrs ? attrs : {};
-				return createComponent(node, props, slots, passthruAttrs);
+				return createComponent(node, props, slots, passthruAttrs, nativeSlots);
 			});
 	},
 });
