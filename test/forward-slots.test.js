@@ -3,6 +3,16 @@ import { mount } from "@vue/test-utils";
 import { ForwardSlots } from "../src";
 import { h } from "vue";
 
+const defaultFragment = {
+	default: () => [
+		h("span", { id: "mock" }, "Hello world 1"),
+		h("span", { id: "mock" }, "Hello world 2"),
+		h("span", { id: "mock" }, "Hello world 3"),
+		h("span", { id: "mock" }, "Hello world 4"),
+		h("span", { id: "mock" }, "Hello world 5"),
+	],
+};
+
 const mockSlots = {
 	prepend: () => h("span", { id: "prepend" }, "Before the world"),
 	"prepend.one": () => h("span", { id: "prepend-one" }, "One"),
@@ -388,6 +398,31 @@ describe("when combining both native and forwarded slots", () => {
 		});
 
 		expect(wrapper.html()).not.toContain("Native Slot");
+		expect(wrapper.html()).not.toContain("Hello world");
+	});
+});
+
+describe("forwards to multiple fragments in default slot", () => {
+	const Inner = {
+		name: "Inner",
+		setup(props, { slots }) {
+			return slots.default;
+		},
+	};
+
+	test("pass through", () => {
+		const wrapper = mount(ForwardSlots, {
+			props: {
+				slots: defaultFragment,
+			},
+			slots: {
+				default: () => h(Inner),
+			},
+		});
+
+		console.log(wrapper.html());
+
+		expect(wrapper.html()).toContain("Native Slot");
 		expect(wrapper.html()).not.toContain("Hello world");
 	});
 });

@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, PropType, Slot, VNode, VNodeProps } from "vue";
+import { computed, defineComponent, h, PropType, Slot, VNode, VNodeProps, Fragment } from "vue";
 
 type SlotOption = string | RegExp | (string | RegExp)[];
 
@@ -114,12 +114,16 @@ export const ForwardSlots = defineComponent({
 	setup(props: ForwardSlotsProps, { slots, attrs }) {
 		const children = computed(() => slots.default?.() || []);
 
-		return () =>
-			children.value.map((node: VNode) => {
-				const nativeSlots = Object.keys(node.children ?? {});
-				const slots = Object.assign({}, props.slots, node.children);
-				const passthruAttrs = props.inheritAttrs ? attrs : {};
-				return createComponent(node, props, slots, passthruAttrs, nativeSlots);
-			});
+		const createNodeArray = (node: VNode) => {
+			if (node.type === Fragment && Array.isArray(node.children) && node.children?.length) {
+				return node.children.map(createNodeArray);
+			}
+			const nativeSlots = Object.keys(node.children ?? {});
+			const slots = Object.assign({}, props.slots, node.children);
+			const passthruAttrs = props.inheritAttrs ? attrs : {};
+			return createComponent(node, props, slots, passthruAttrs, nativeSlots);
+		};
+
+		return () => children.value.map(createNodeArray);
 	},
 });

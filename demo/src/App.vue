@@ -9,9 +9,16 @@
 		<template #one> One </template>
 		<template #item.test> Wildcard Test</template>
 	</FirstLevel>
+	<ForwardSlots :slots="$slots">
+		<Fragment v-for="n in 5" :key="n">
+			{{ n }}
+		</Fragment>
+	</ForwardSlots>
 </template>
 
 <script setup>
+import { ForwardSlots } from "@evomark/vue-forward-slots";
+import Fragment from "./components/Fragment.vue";
 import FirstLevel from "./components/First.vue";
 </script>
 
