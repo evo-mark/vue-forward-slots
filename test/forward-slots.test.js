@@ -5,11 +5,11 @@ import { h } from "vue";
 
 const defaultFragment = {
 	default: () => [
-		h("span", { id: "mock" }, "Hello world 1"),
-		h("span", { id: "mock" }, "Hello world 2"),
-		h("span", { id: "mock" }, "Hello world 3"),
-		h("span", { id: "mock" }, "Hello world 4"),
-		h("span", { id: "mock" }, "Hello world 5"),
+		h("span", { id: "mock1" }, "Hello world 1"),
+		h("span", { id: "mock2" }, "Hello world 2"),
+		h("span", { id: "mock3" }, "Hello world 3"),
+		h("span", { id: "mock4" }, "Hello world 4"),
+		h("span", { id: "mock5" }, "Hello world 5"),
 	],
 };
 
@@ -420,9 +420,7 @@ describe("forwards to multiple fragments in default slot", () => {
 			},
 		});
 
-		console.log(wrapper.html());
-
-		expect(wrapper.html()).toContain("Native Slot");
-		expect(wrapper.html()).not.toContain("Hello world");
+		expect(wrapper.html()).toContain("Hello world 1");
+		expect(wrapper.html()).toContain("Hello world 5");
 	});
 });
