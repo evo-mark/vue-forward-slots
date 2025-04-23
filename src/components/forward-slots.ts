@@ -112,8 +112,6 @@ export const ForwardSlots = defineComponent({
 		},
 	},
 	setup(props: ForwardSlotsProps, { slots, attrs }) {
-		const children = computed(() => slots.default?.() || []);
-
 		const createNodeArray = (node: VNode) => {
 			if (node.type === Fragment && Array.isArray(node.children) && node.children?.length) {
 				return node.children.map(createNodeArray);
@@ -124,6 +122,9 @@ export const ForwardSlots = defineComponent({
 			return createComponent(node, props, slots, passthruAttrs, nativeSlots);
 		};
 
-		return () => children.value.map(createNodeArray);
+		return () => {
+			const defaultSlots = slots.default && typeof slots.default === "function" ? slots.default() : [];
+			return defaultSlots.map(createNodeArray);
+		};
 	},
 });

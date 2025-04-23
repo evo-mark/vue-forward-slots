@@ -4,16 +4,16 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev": "vite --host",
         "build": "vite build",
         "preview": "vite preview"
     },
     "dependencies": {
-        "@evomark/vue-forward-slots": "link:..",
-        "vue": "^3.5.8"
+        "@evomark/vue-forward-slots": "workspace:*",
+        "vue": "^3.5.13"
     },
     "devDependencies": {
-        "@vitejs/plugin-vue": "^5.1.4",
-        "vite": "^5.4.7"
+        "@vitejs/plugin-vue": "^5.2.3",
+        "vite": "^6.3.2"
     }
 }
