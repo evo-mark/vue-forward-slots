@@ -9,7 +9,7 @@
 		<template #one> One </template>
 		<template #item.test> Wildcard Test</template>
 	</FirstLevel>
-	<ForwardSlots :slots="$slots">
+	<ForwardSlots v-test="true" :slots="$slots">
 		<Fragment v-for="n in 5" :key="n">
 			{{ n }}
 		</Fragment>
@@ -21,7 +21,7 @@
 			</ForwardSlots>
 		</slot>
 	</div>
-	{{  testObject.linePrice }}
+	{{ testObject.linePrice }}
 </template>
 
 <script setup>
@@ -30,6 +30,12 @@ import { ForwardSlots } from "@evomark/vue-forward-slots";
 import Fragment from "./components/Fragment.vue";
 import FirstLevel from "./components/First.vue";
 import TestDeepItem from "./components/DeepItem.vue";
+
+const vTest = {
+	mounted(el) {
+		console.log(el);
+	},
+};
 
 const testObject = ref({
 	id: 53,
@@ -63,8 +69,7 @@ const testObject = ref({
 				medium: "http://miketayloreducation.evo/media/Products/medium/talc-barbers-mate.jpg",
 				small: "http://miketayloreducation.evo/media/Products/small/talc-barbers-mate.jpg",
 				tiny: "http://miketayloreducation.evo/media/Products/tiny/talc-barbers-mate.jpg",
-				thumbnail:
-					"http://miketayloreducation.evo/media/Products/thumbnail/talc-barbers-mate.jpg"
+				thumbnail: "http://miketayloreducation.evo/media/Products/thumbnail/talc-barbers-mate.jpg",
 			},
 			pivot: { product_id: 1, media_id: 28, is_featured: true },
 			folder: {
@@ -73,8 +78,8 @@ const testObject = ref({
 				parent_folder: null,
 				name: "Products",
 				created_at: "2023-03-02T10:08:33.000000Z",
-				updated_at: "2023-03-02T10:08:33.000000Z"
-			}
+				updated_at: "2023-03-02T10:08:33.000000Z",
+			},
 		},
 		onSale: false,
 		stockDisplay: false,
@@ -84,8 +89,8 @@ const testObject = ref({
 			available: 99999999,
 			label: "In Stock",
 			message: "In Stock",
-			class: "success"
-		}
+			class: "success",
+		},
 	},
 	notes: "",
 	quantity: 1,
@@ -93,19 +98,18 @@ const testObject = ref({
 	linePrice: { exc_tax: 1200, inc_tax: 1200, tax: 0, tax_rate: 0, tax_multiplier: 1 },
 	lineDiscount: null,
 	lineWeight: 100,
-	taxRate: 0
+	taxRate: 0,
 });
-
 
 const dummyData = {
 	foo: "bar",
-	fizz: "buzz"
-}
+	fizz: "buzz",
+};
 const changeTestObject = async () => {
-	console.log("updating")
-	await new Promise((resolve) => setTimeout(resolve,4000));
+	console.log("updating");
+	await new Promise((resolve) => setTimeout(resolve, 4000));
 	testObject.value.linePrice.exc_tax += 10;
-}
+};
 </script>
 
 <style scoped>

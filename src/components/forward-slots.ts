@@ -1,4 +1,15 @@
-import { computed, defineComponent, h, PropType, Slot, VNode, VNodeProps, Fragment } from "vue";
+import {
+	defineComponent,
+	h,
+	PropType,
+	Slot,
+	VNode,
+	VNodeProps,
+	Fragment,
+	getCurrentInstance,
+	withDirectives,
+	type DirectiveArguments,
+} from "vue";
 
 type SlotOption = string | RegExp | (string | RegExp)[];
 
@@ -11,7 +22,12 @@ interface ForwardSlotsProps {
 	only?: SlotOption;
 	except?: SlotOption;
 	inheritAttrs: boolean;
+	inheritDirectives: boolean;
 	filterNative: boolean;
+}
+
+function directivesToArguments(directives: NonNullable<VNode["dirs"]>): DirectiveArguments {
+	return directives.map((binding) => [binding.dir, binding.value, binding.arg, binding.modifiers]);
 }
 
 function isValidSlotOption(value: any): value is SlotOption {
@@ -33,7 +49,9 @@ function createSlots(slots: Slots, options: ForwardSlotsProps, nativeSlots: stri
 	return Object.entries(slots)
 		.filter(([slotName]) => shouldIncludeSlot(slotName, include, exclude, nativeSlots, options.filterNative))
 		.reduce((result, [slotName, slotFunction]) => {
-			result[slotName] = (args: any) => slotFunction(args);
+			if (slotFunction) {
+				result[slotName] = (args: any) => slotFunction(args);
+			}
 			return result;
 		}, {} as Slots);
 }
@@ -79,8 +97,9 @@ function createComponent(
 	slots: Slots,
 	attrs: VNodeProps,
 	nativeSlots: string[],
-): VNode {
-	return h(component, attrs, createSlots(slots, options, nativeSlots));
+): VNode | undefined {
+	if (!component) return undefined;
+	else return h(component, attrs, createSlots(slots, options, nativeSlots));
 }
 
 export const ForwardSlots = defineComponent({
@@ -106,25 +125,46 @@ export const ForwardSlots = defineComponent({
 			type: Boolean,
 			default: true,
 		},
+		inheritDirectives: {
+			type: Boolean,
+			default: false,
+		},
 		filterNative: {
 			type: Boolean,
 			default: false,
 		},
 	},
 	setup(props: ForwardSlotsProps, { slots, attrs }) {
-		const createNodeArray = (node: VNode) => {
+		const instance = getCurrentInstance();
+
+		const createNodeArray = (node: VNode): undefined | VNode | VNode[] => {
 			if (node.type === Fragment && Array.isArray(node.children) && node.children?.length) {
-				return node.children.map(createNodeArray);
+				return (node.children as VNode[]).map(createNodeArray) as VNode[];
 			}
 			const nativeSlots = Object.keys(node.children ?? {});
 			const slots = Object.assign({}, props.slots, node.children);
 			const passthruAttrs = props.inheritAttrs ? attrs : {};
-			return createComponent(node, props, slots, passthruAttrs, nativeSlots);
+			return createComponent(node, props, slots, passthruAttrs as VNodeProps, nativeSlots);
 		};
 
 		return () => {
 			const defaultSlots = slots.default && typeof slots.default === "function" ? slots.default() : [];
-			return defaultSlots.map(createNodeArray);
+			const directives = instance?.vnode.dirs;
+			const nodes = defaultSlots.map(createNodeArray);
+			if (!directives?.length || !props.inheritDirectives) {
+				instance!.vnode.dirs = null;
+				return nodes;
+			}
+			const directiveArguments = directives ? directivesToArguments(directives) : undefined;
+			const applyDirectives = (node: VNode | undefined): VNode | undefined => {
+				if (!node) return undefined;
+				else return withDirectives(node, directiveArguments ?? []);
+			};
+			const apply = (node: undefined | VNode | VNode[]): undefined | VNode | VNode[] => {
+				return Array.isArray(node) ? (node.map(apply) as VNode[]) : applyDirectives(node);
+			};
+			instance!.vnode.dirs = null;
+			return nodes.map(apply).filter(Boolean);
 		};
 	},
 });
