@@ -1,6 +1,6 @@
 {
 	"name": "@evomark/vue-forward-slots",
-	"version": "6.2.2",
+	"version": "7.0.0",
 	"publishConfig": {
 		"access": "public",
 		"registry": "https://registry.npmjs.org/"
