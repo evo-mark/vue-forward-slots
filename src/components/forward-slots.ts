@@ -17,7 +17,7 @@ type Slots = {
 	[name: string]: Slot | undefined;
 };
 
-interface ForwardSlotsProps {
+export interface ForwardSlotsProps {
 	slots: Slots;
 	only?: SlotOption;
 	except?: SlotOption;
