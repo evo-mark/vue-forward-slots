@@ -21,20 +21,27 @@ interface ForwardSlotsProps {
 	slots: Slots;
 	only?: SlotOption;
 	except?: SlotOption;
-	inheritAttrs: boolean;
-	inheritDirectives: boolean;
-	filterNative: boolean;
+	inheritAttrs?: boolean;
+	inheritDirectives?: boolean;
+	filterNative?: boolean;
 }
 
+/**
+ * Converts a directive object into a flat array of directive arguments
+ * @param directives The directives to map
+ * @returns The array of dir args
+ */
 function directivesToArguments(directives: NonNullable<VNode["dirs"]>): DirectiveArguments {
 	return directives.map((binding) => [binding.dir, binding.value, binding.arg, binding.modifiers]);
 }
 
+/** Validate the type of the slot option */
 function isValidSlotOption(value: any): value is SlotOption {
 	return typeof value === "string" || value instanceof RegExp || Array.isArray(value);
 }
 
-function wrap(input: any): string[] {
+/** Ensures input is wrapped in an array and removes empty items */
+function wrap(input: any): (string | RegExp)[] {
 	if (!Array.isArray(input)) {
 		input = [input];
 	}
@@ -72,7 +79,7 @@ function shouldIncludeSlot(
 	include: (string | RegExp)[],
 	exclude: (string | RegExp)[],
 	nativeSlots: string[],
-	filterNative: boolean,
+	filterNative: boolean = false,
 ): boolean {
 	if (include.length) {
 		return include.some((item) => {
